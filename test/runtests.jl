@@ -1,5 +1,7 @@
 using ImagePlot
 using Base.Test
 
-# write your own tests here
-@test 1 == 1
+using ImagePlot, TestImages
+img = plot(testimage("lighthouse"), 30*randn(2,10000).+[80;600])
+img = plot(img, [60 60 90; 580 620 600], radius = 6, fillcolor = "black")
+
