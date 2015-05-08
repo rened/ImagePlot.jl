@@ -1,5 +1,6 @@
 module ImagePlot
 
+using FunctionalDataUtils
 using Compose, Color, Compat
 import Cairo, FixedPointNumbers
 import Compose.compose
@@ -55,7 +56,7 @@ function plot{T<:Number}(img, points::Array{T,2}, labels::AbstractArray = [];
         U = sort(unique(labels))
         if all(x->isa(x,Real), U)
             if isempty(colormap) 
-                colors = distinguishable_colors(length(U)+1)[2:end]
+                colors = @p jetcolormap len(U) | unstack | map x->RGB(x...)
             else
                 colors = colormap
             end
