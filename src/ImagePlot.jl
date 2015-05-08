@@ -29,18 +29,52 @@ function compose{T<:Real,N}(img::Array{T,N}, c::Context; usealpha = true)
     outimg
 end
 
-function plot{T<:Number}(img, points::Array{T,2}; radius = 3px, fillcolor = "yellow", strokecolor = nothing, kargs...)
+function plot{T<:Number}(img, points::Array{T,2}, labels::AbstractArray = [];
+    compact = false,
+    radius = 3px,
+    fillcolor = "yellow",
+    strokecolor = nothing,
+    colormap = [],
+    kargs...)
+    isempty(points) && return img
     c = context()
-    for i = 1:size(points,2)
-        c = compose(c,  circle(points[1,i],points[2,i], radius))
+    function plotpoints(points, fillcolor)
+        newc = context() 
+        for i = 1:size(points,2)
+            newc = compose(newc,  circle(points[1,i],points[2,i], radius))
+        end
+        if strokecolor != nothing
+            newc = compose(newc, stroke(color(strokecolor)))
+        end
+        newc = compose(newc, fill(fillcolor))
+        c = compose(c, newc)
     end
-    if strokecolor != nothing
-        c = compose(c, stroke(color(strokecolor)))
+    if isempty(labels)
+        plotpoints(points, fillcolor)
+    else
+        U = sort(unique(labels))
+        if all(x->isa(x,Real), U)
+            if isempty(colormap) 
+                colors = distinguishable_colors(length(U)+1)[2:end]
+            else
+                colors = colormap
+            end
+        else
+            colors = U
+        end
+        for i in 1:length(U)
+            plotpoints(points[:,vec(labels .== U[i])], colors[i])
+        end
     end
-    c = compose(c, fill(fillcolor))
     width, height = size(img)
     c = compose(context(units=UnitBox(0, 0, width, height)), c)
-    compose(img, c; kargs...)
+    r = compose(img, c; kargs...)                                      
+    if compact
+        mi = round(Int,minimum(points,2))
+        ma = round(Int,maximum(points,2))
+        r = r[clamp(mi[1]-20:ma[1]+20,1,size(r,1)), clamp(mi[2]-20:ma[2]+20,1,size(r,2)), :] 
+    end
+    r
 end
 
 
