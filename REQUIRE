@@ -1,7 +1,7 @@
 julia 0.3
 Images
 Compose
-Color
+Colors
 TestImages
 FunctionalDataUtils
 Compat

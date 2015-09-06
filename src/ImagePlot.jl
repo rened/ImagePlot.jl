@@ -3,7 +3,7 @@
 module ImagePlot
 
 using FunctionalDataUtils
-using Compose, Color, Compat
+using Compose, Colors, Compat
 import Cairo, FixedPointNumbers
 import Compose.compose
 import Images
@@ -35,7 +35,7 @@ end
 function plot{T<:Number}(img, points::Array{T,2}, labels::AbstractArray = [];
     compact = false,
     radius = 3px,
-    fillcolor = "yellow",
+    fillcolor = colorant"yellow",
     strokecolor = nothing,
     colormap = [],
     kargs...)
